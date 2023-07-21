@@ -1,7 +1,7 @@
 import 'package:encrypt/encrypt.dart';
 
-void enc(String text, String keyInput) {
-  Key key = Key.fromUtf8(keyInput);
+String enc(String text, String encKey) {
+  Key key = Key.fromUtf8(encKey);
   var encrypter = Encrypter(AES(
     key,
     mode: AESMode.ecb,
@@ -10,8 +10,17 @@ void enc(String text, String keyInput) {
   IV iv = IV.fromSecureRandom(key.length);
 
   var encrypted = encrypter.encrypt(text, iv: iv);
-  var decrypted = encrypter.decrypt(encrypted, iv: iv);
+  return encrypted.base64;
+}
 
-  print(encrypted.base64);
-  print(decrypted);
+String dec(String enc, String encKey) {
+  Key key = Key.fromUtf8(encKey);
+  var decryptor = Encrypter(AES(
+    key,
+    mode: AESMode.ecb,
+    padding: 'PKCS7',
+  ));
+  IV iv = IV.fromSecureRandom(key.length);
+
+  return decryptor.decrypt64(enc, iv: iv);
 }
